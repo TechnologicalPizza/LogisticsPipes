@@ -191,15 +191,15 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		world.spawnEntity(entityitem);
 	}
 
-	public void addListener(ISimpleInventoryEventHandler listner) {
-		if (!_listener.contains(listner)) {
-			_listener.add(listner);
+	public void addListener(ISimpleInventoryEventHandler listener) {
+		if (!_listener.contains(listener)) {
+			_listener.add(listener);
 		}
 	}
 
-	public void removeListener(ISimpleInventoryEventHandler listner) {
-		if (_listener.contains(listner)) {
-			_listener.remove(listner);
+	public void removeListener(ISimpleInventoryEventHandler listener) {
+		if (_listener.contains(listener)) {
+			_listener.remove(listener);
 		}
 	}
 

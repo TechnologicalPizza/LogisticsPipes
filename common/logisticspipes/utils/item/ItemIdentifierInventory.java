@@ -79,7 +79,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	@Deprecated
 	@Nonnull
-	//NOTE: this is a clone, changing the return of this function does not altet the inventory
+	//NOTE: this is a clone, changing the return of this function does not alter the inventory
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) {
 			return ItemStack.EMPTY;

@@ -97,7 +97,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	public void endReached(LPTravelingItemServer data, TileEntity tile) {
 		getCacheHolder().trigger(CacheTypes.Inventory);
 		transport.markChunkModified(tile);
-		notifyOfItemArival(data.getInfo());
+		notifyOfItemArrival(data.getInfo());
 		EnumFacing orientation = data.output.getOpposite();
 		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getOriginalUpgradeManager().getSneakyOrientation();
