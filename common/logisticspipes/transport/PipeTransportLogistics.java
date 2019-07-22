@@ -461,7 +461,7 @@ public class PipeTransportLogistics {
 
 		markChunkModified(tile);
 		if (MainProxy.isServer(getWorld()) && arrivingItem.getInfo() != null && arrivingItem.getArrived() && isRouted) {
-			getRoutedPipe().notifyOfItemArival(arrivingItem.getInfo());
+			getRoutedPipe().notifyOfItemArrival(arrivingItem.getInfo());
 		}
 		if (getPipe() instanceof FluidRoutedPipe) {
 			if (((FluidRoutedPipe) getPipe()).endReached(arrivingItem, tile)) {

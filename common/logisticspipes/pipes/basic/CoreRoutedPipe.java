@@ -914,7 +914,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (!(entityplayer.isSneaking()) && getOriginalUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+		if (!(entityplayer.isSneaking()) && getOriginalUpgradeManager().tryInsert(getWorld(), entityplayer)) {
 			return true;
 		}
 
@@ -1287,7 +1287,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return 0.0;
 	}
 
-	public void notifyOfItemArival(ItemRoutingInformation information) {
+	public void notifyOfItemArrival(ItemRoutingInformation information) {
 		_inTransitToMe.remove(information);
 		if (this instanceof IRequireReliableTransport) {
 			((IRequireReliableTransport) this).itemArrived(information.getItem(), information.targetInfo);

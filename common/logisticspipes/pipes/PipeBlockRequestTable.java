@@ -538,7 +538,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 				@Override
 				public void handleItem(IRoutedItem item) {
-					PipeBlockRequestTable.this.notifyOfItemArival(item.getInfo());
+					PipeBlockRequestTable.this.notifyOfItemArrival(item.getInfo());
 					if (item.getItemIdentifierStack() != null) {
 						ItemIdentifierStack stack = item.getItemIdentifierStack();
 						stack.setStackSize(inv.addCompressed(stack.makeNormalStack(), false));

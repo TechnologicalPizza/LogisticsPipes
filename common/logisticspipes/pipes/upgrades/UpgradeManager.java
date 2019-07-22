@@ -328,7 +328,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		return disconnectedSides.contains(side);
 	}
 
-	public boolean tryIserting(World world, EntityPlayer entityplayer) {
+	public boolean tryInsert(World world, EntityPlayer entityplayer) {
 		ItemStack itemStackInMainHand = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		if (!itemStackInMainHand.isEmpty() && itemStackInMainHand.getItem() instanceof ItemUpgrade) {
 			if (MainProxy.isClient(world)) {

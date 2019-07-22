@@ -46,8 +46,8 @@ import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.extention.GuiExtentionController;
-import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
+import logisticspipes.utils.gui.extension.GuiExtensionController;
+import logisticspipes.utils.gui.extension.GuiExtensionController.GuiSide;
 import logisticspipes.utils.string.StringUtils;
 
 @ModDependentInterface(modId = { LPConstants.neiModID }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
@@ -68,8 +68,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private SubGuiScreen subGui;
 	protected List<IRenderSlot> slots = new ArrayList<>();
-	protected GuiExtentionController extentionControllerLeft = new GuiExtentionController(GuiSide.LEFT);
-	protected GuiExtentionController extentionControllerRight = new GuiExtentionController(GuiSide.RIGHT);
+	protected GuiExtensionController extensionControllerLeft = new GuiExtensionController(GuiSide.LEFT);
+	protected GuiExtensionController extensionControllerRight = new GuiExtensionController(GuiSide.RIGHT);
 	private GuiButton selectedButton;
 
 	private int currentDrawScreenMouseX;
@@ -109,8 +109,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 		xCenter = (right + guiLeft) / 2;
 		yCenter = (bottom + guiTop) / 2;
-		extentionControllerLeft.setMaxBottom(bottom);
-		extentionControllerRight.setMaxBottom(bottom);
+		extensionControllerLeft.setMaxBottom(bottom);
+		extensionControllerRight.setMaxBottom(bottom);
 	}
 
 	@Override
@@ -229,17 +229,17 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-		renderExtentions();
+		renderExtensions();
 	}
 
-	protected void renderExtentions() {
-		extentionControllerLeft.render(guiLeft, guiTop);
-		extentionControllerRight.render(guiLeft + xSize, guiTop);
+	protected void renderExtensions() {
+		extensionControllerLeft.render(guiLeft, guiTop);
+		extensionControllerRight.render(guiLeft + xSize, guiTop);
 	}
 
 	@Override
 	protected void drawSlot(Slot slot) {
-		if (extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
+		if (extensionControllerLeft.renderSlot(slot) && extensionControllerRight.renderSlot(slot)) {
 			if(subGui == null) {
 				onRenderSlot(slot);
 			}
@@ -313,10 +313,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	protected boolean isMouseOverSlot(Slot par1Slot, int par2, int par3) {
-		if (!extentionControllerLeft.renderSelectSlot(par1Slot)) {
+		if (!extensionControllerLeft.renderSelectSlot(par1Slot)) {
 			return false;
 		}
-		if (!extentionControllerRight.renderSelectSlot(par1Slot)) {
+		if (!extensionControllerRight.renderSelectSlot(par1Slot)) {
 			return false;
 		}
 		if (isMouseInFuzzyPanel(currentDrawScreenMouseX, currentDrawScreenMouseY)) return false;
@@ -331,11 +331,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		for (GuiButton button : (List<GuiButton>) buttonList) {
-			if (extentionControllerLeft.renderButtonControlled(button)) {
-				button.visible = extentionControllerLeft.renderButton(button);
+			if (extensionControllerLeft.renderButtonControlled(button)) {
+				button.visible = extensionControllerLeft.renderButton(button);
 			}
-			if (extentionControllerRight.renderButtonControlled(button)) {
-				button.visible = extentionControllerRight.renderButton(button);
+			if (extensionControllerRight.renderButtonControlled(button)) {
+				button.visible = extensionControllerRight.renderButton(button);
 			}
 		}
 	}
@@ -394,10 +394,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if (par1 < guiLeft) {
-			extentionControllerLeft.mouseOver(par1, par2);
+			extensionControllerLeft.mouseOver(par1, par2);
 		}
 		if (par1 > guiLeft + xSize) {
-			extentionControllerRight.mouseOver(par1, par2);
+			extensionControllerRight.mouseOver(par1, par2);
 		}
 		for (IRenderSlot slot : slots) {
 			if (slot instanceof IItemTextureRenderSlot) {
@@ -474,10 +474,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			super.mouseClicked(par1, par2, par3);
 		}
 		if (par3 == 0 && par1 < guiLeft && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
-			extentionControllerLeft.mouseClicked(par1, par2, par3);
+			extensionControllerLeft.mouseClicked(par1, par2, par3);
 		}
 		if (par3 == 0 && par1 > guiLeft + xSize && !mouseCanPressButton(par1, par2) && !isOverSlot(par1, par2)) {
-			extentionControllerRight.mouseClicked(par1, par2, par3);
+			extensionControllerRight.mouseClicked(par1, par2, par3);
 		}
 	}
 
@@ -604,7 +604,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@ModDependentMethod(modId = LPConstants.neiModID)
 	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
 		if (gui instanceof LogisticsBaseGuiScreen) {
-			return ((LogisticsBaseGuiScreen) gui).extentionControllerRight.isOverPanel(x, y, w, h);
+			return ((LogisticsBaseGuiScreen) gui).extensionControllerRight.isOverPanel(x, y, w, h);
 		}
 		return false;
 	}
