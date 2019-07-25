@@ -51,7 +51,7 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -71,7 +71,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	public int dimension;
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	private SmallGuiButton Macrobutton;
-	private InputBar search;
+	private GuiInputBar search;
 	private boolean showRequest = true;
 	private int startLeft;
 	private int startXSize;
@@ -158,7 +158,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		(cycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
 
 		if (search == null) {
-			search = new InputBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+			search = new GuiInputBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+			search.placeholder = StringUtils.translate("gui.requestblock.searchplaceholder");
 		}
 		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
 
@@ -206,8 +207,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			}
 
 			itemDisplay.renderAmount(getStackAmount());
-			//SearchInput
-			search.renderSearchBar();
+
+			search.renderGui();
 
 			itemDisplay.renderSortMode(right - 103, bottom - 52);
 			itemDisplay.renderItemArea(zLevel);

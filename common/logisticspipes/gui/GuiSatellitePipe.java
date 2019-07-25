@@ -16,7 +16,7 @@ import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -30,7 +30,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	private PipeItemsSatelliteLogistics _satellite;
 	private PipeFluidSatellite _liquidSatellite;
 	private EntityPlayer _player;
-	private InputBar input;
+	private GuiInputBar input;
 
 	private GuiSatellitePipe(EntityPlayer player) {
 		super(new Container() {
@@ -60,7 +60,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.add(new SmallGuiButton(0, (width / 2) - (30 / 2) + 35, (height / 2) + 20, 30, 10, "Save"));
-		input = new InputBar(fontRenderer, this, guiLeft + 8, guiTop + 40, 100, 16);
+		input = new GuiInputBar(fontRenderer, this, guiLeft + 8, guiTop + 40, 100, 16);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		super.drawGuiContainerBackgroundLayer(f, x, y);
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		input.renderSearchBar();
+		input.renderGui();
 	}
 
 	@Override

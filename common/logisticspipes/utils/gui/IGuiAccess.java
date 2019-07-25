@@ -2,13 +2,11 @@ package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
 
-public interface IGuiAccess {
+public interface IGuiAccess extends IGuiArea {
 
-	int getGuiLeft();
-	int getGuiTop();
 	int getXSize();
+
 	int getYSize();
-	int getRight();
-	int getBottom();
+
 	Minecraft getMC();
 }

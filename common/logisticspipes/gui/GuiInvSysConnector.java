@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,7 +14,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.interfaces.IGUIChannelInformationReceiver;
-import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
 import logisticspipes.network.packets.pipe.InvSysConOpenSelectChannelPopupPacket;
@@ -27,15 +24,13 @@ import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.InputBar;
-import logisticspipes.utils.gui.ItemDisplay;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
-import logisticspipes.utils.tuples.Pair;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUIChannelInformationReceiver {
 
@@ -44,7 +39,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	private int page = 0;
 	private final List<ItemIdentifierStack> _allItems = new ArrayList<>();
 	private final PipeItemsInvSysConnector pipe;
-	private InputBar resistanceCountBar;
+	private GuiInputBar resistanceCountBar;
 
 	private ChannelInformation connectedChannel = null;
 
@@ -73,7 +68,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		buttonList.add(new SmallGuiButton(6, guiLeft + 130, guiTop + 20, 40, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Change")));
 
 		if(this.resistanceCountBar == null) {
-			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
+			this.resistanceCountBar = new GuiInputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, GuiInputBar.Align.CENTER);
 			this.resistanceCountBar.input1 = Integer.toString(pipe.resistance);
 			this.resistanceCountBar.minNumber = 0;
 		}
@@ -93,7 +88,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
-		resistanceCountBar.renderSearchBar();
+		resistanceCountBar.renderGui();
 	}
 
 	@Override

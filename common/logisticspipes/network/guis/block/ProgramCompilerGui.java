@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.block;
 
-import logisticspipes.LPItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
@@ -8,7 +7,6 @@ import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.gui.GuiProgramCompiler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
 
 import logisticspipes.utils.StaticResolve;
 
@@ -34,13 +32,7 @@ public class ProgramCompilerGui extends CoordinatesGuiProvider {
 		if (tile == null) {
 			return null;
 		}
-		DummyContainer dummy = new DummyContainer(player, null, tile);
-
-		dummy.addRestrictedSlot(0, tile.getInventory(), 10, 10, LPItems.disk);
-		dummy.addRestrictedSlot(1, tile.getInventory(), 154, 10, LPItems.logisticsProgrammer);
-
-		dummy.addNormalSlotsForPlayerInventory(10, 45);
-		return dummy;
+		return GuiProgramCompiler.createDummyContainer(player, null, tile.getInventory(), tile);
 	}
 
 	@Override

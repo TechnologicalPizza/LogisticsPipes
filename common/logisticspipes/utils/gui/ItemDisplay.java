@@ -56,7 +56,7 @@ public class ItemDisplay {
 	private int page = 0;
 	private int maxPage = 0;
 	//private int requestCount = 1;
-	private InputBar requestCountBar;
+	private GuiInputBar requestCountBar;
 	private Object[] tooltip = null;
 	private boolean listbyserver = false;
 
@@ -89,7 +89,7 @@ public class ItemDisplay {
 		}
 		this.amountChangeMode = amountChangeMode;
 		this.shiftPageChange = shiftPageChange;
-		this.requestCountBar = new InputBar(this.fontRenderer, screen, amountPosLeft - (amountWidth / 2), amountPosTop - 5, amountWidth, 12, false, true, InputBar.Align.CENTER);
+		this.requestCountBar = new GuiInputBar(this.fontRenderer, screen, amountPosLeft - (amountWidth / 2), amountPosTop - 5, amountWidth, 12, false, true, GuiInputBar.Align.CENTER);
 		this.requestCountBar.input1 = "1";
 		this.requestCountBar.minNumber = 1;
 	}
@@ -240,7 +240,7 @@ public class ItemDisplay {
 		//fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", this.amountPosLeft - fontRenderer.getStringWidth(StackrequestCount + "") / 2, this.amountPosTop + 11, 0x404040);
 
-		requestCountBar.renderSearchBar();
+		requestCountBar.renderGui();
 	}
 
 	public void renderItemArea(double zLevel) {

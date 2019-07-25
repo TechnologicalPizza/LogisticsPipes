@@ -104,7 +104,8 @@ public class GuiManageChannelPopup extends SubGuiScreen implements IGUIChannelIn
 		} else if (guibutton.id == 3) { // Edit
 			int selected = textList.getSelected();
 			if(selected >= 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenEditChannelGUIPacket.class).setIdentifier(channelList.get(selected).getChannelIdentifier().toString()).setBlockPos(position));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenEditChannelGUIPacket.class)
+						.setIdentifier(channelList.get(selected).getChannelIdentifier().toString()).setBlockPos(position));
 			}
 		} else if (guibutton.id == 4) {
 			textList.scrollDown();

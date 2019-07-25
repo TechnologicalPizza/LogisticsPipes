@@ -177,7 +177,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			//Draw super class (maybe NEI)
 			super.drawScreen(0, 0, partialTicks);
-			//Resore Mouse Pos
+			//Restore Mouse Pos
 			try {
 				Field fX = Mouse.class.getDeclaredField("x");
 				Field fY = Mouse.class.getDeclaredField("y");
@@ -221,7 +221,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			RenderHelper.enableStandardItemLighting();
 		}
 		Runnable run = renderAtTheEnd.poll();
-		while(run != null) {
+		while (run != null) {
 			run.run();
 			run = renderAtTheEnd.poll();
 		}
@@ -240,7 +240,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	protected void drawSlot(Slot slot) {
 		if (extensionControllerLeft.renderSlot(slot) && extensionControllerRight.renderSlot(slot)) {
-			if(subGui == null) {
+			if (subGui == null) {
 				onRenderSlot(slot);
 			}
 			super.drawSlot(slot);
@@ -248,7 +248,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	private void onRenderSlot(Slot slot) {
-		if(slot instanceof IFuzzySlot) {
+		if (slot instanceof IFuzzySlot) {
 			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
 			int x1 = slot.xPos;
 			int y1 = slot.yPos;
@@ -271,10 +271,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			GL11.glEnable(GL11.GL_LIGHTING);
 			final boolean mouseOver = this.isMouseOverSlot(slot, currentDrawScreenMouseX, currentDrawScreenMouseY);
-			if(mouseOver) {
-				if(fuzzySlot == slot) {
+			if (mouseOver) {
+				if (fuzzySlot == slot) {
 					fuzzySlotGuiHoverTime++;
-					if(fuzzySlotGuiHoverTime >= 10) {
+					if (fuzzySlotGuiHoverTime >= 10) {
 						fuzzySlotActiveGui = true;
 					}
 				} else {
@@ -283,10 +283,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					fuzzySlotActiveGui = false;
 				}
 			}
-			if(fuzzySlotActiveGui && fuzzySlot == slot) {
-				if(!mouseOver) {
+			if (fuzzySlotActiveGui && fuzzySlot == slot) {
+				if (!mouseOver) {
 					//Check within FuzzyGui
-					if(!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
+					if (!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
 						fuzzySlotActiveGui = false;
 						fuzzySlot = null;
 					}
@@ -357,18 +357,20 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInput();
-		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
-		int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-		int dWheel = Mouse.getEventDWheel();
-		if (dWheel != 0 && !mouseHandled) {
-			Optional<DummySlot> slotOpt = this.inventorySlots.inventorySlots.stream().filter(it -> it instanceof DummySlot).map(it -> (DummySlot)it).filter(it -> isMouseOverSlot(it, x, y)).findFirst();
+		int wheel = Mouse.getEventDWheel();
+		if (wheel != 0 && !mouseHandled) {
+			int x = getGuiX(Mouse.getEventX());
+			int y = getGuiY(Mouse.getEventY());
+			Optional<DummySlot> slotOpt = this.inventorySlots.inventorySlots.stream()
+					.filter(it -> it instanceof DummySlot).map(it -> (DummySlot) it).filter(it -> isMouseOverSlot(it, x, y)).findFirst();
+
 			if (slotOpt.isPresent()) {
 				DummySlot slot = slotOpt.get();
 				slot.setRedirectCall(true);
 				if (slot.getSlotStackLimit() > 0) {
 					ItemStack stack = slot.getStack();
 					if (!stack.isEmpty()) {
-						int buttonActionID = dWheel > 0 ? 1000 : 1001;
+						int buttonActionID = wheel > 0 ? 1000 : 1001;
 						this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, buttonActionID, ClickType.SWAP, this.mc.player);
 					}
 				}
@@ -482,14 +484,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	protected void mouseReleased(int par1, int par2, int par3) {
-		if (selectedButton != null && par3 == 0) {
-			selectedButton.mouseReleased(par1, par2);
+	protected void mouseReleased(int x, int y, int button) {
+		if (selectedButton != null && button == 0) {
+			selectedButton.mouseReleased(x, y);
 			selectedButton = null;
-		} else if (isMouseInFuzzyPanel(par1 - guiLeft, par2 - guiTop)) {
+		} else if (isMouseInFuzzyPanel(x - guiLeft, y - guiTop)) {
 		} else {
-				super.mouseReleased(par1, par2, par3);
-			}
+			super.mouseReleased(x, y, button);
+		}
 	}
 
 	private boolean mouseCanPressButton(int par1, int par2) {
@@ -510,6 +512,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 		}
 		return false;
+	}
+
+	public int getGuiX(int x) {
+		return x * this.width / this.mc.displayWidth;
+	}
+
+	public int getGuiY(int y) {
+		return this.height - y * this.height / this.mc.displayHeight - 1;
 	}
 
 	public void drawPoint(int x, int y, int color) {
@@ -551,6 +561,16 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	public void closeGui() throws IOException {
 		keyTyped(' ', 1);
+	}
+
+	@Override
+	public int getGuiLeft() {
+		return guiLeft;
+	}
+
+	@Override
+	public int getGuiTop() {
+		return guiTop;
 	}
 
 	@Override

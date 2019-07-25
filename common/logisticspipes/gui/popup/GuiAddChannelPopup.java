@@ -12,7 +12,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtils;
@@ -20,7 +20,7 @@ import logisticspipes.utils.string.StringUtils;
 public class GuiAddChannelPopup extends SubGuiScreen {
 
 	private static String GUI_LANG_KEY = "gui.popup.addchannel.";
-	protected InputBar textInput = null;
+	protected GuiInputBar textInput = null;
 	protected final UUID responsibleSecurityID;
 
 	public GuiAddChannelPopup(UUID responsibleSecurityID) {
@@ -45,7 +45,7 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 		buttonList.add(new SmallGuiButton(4, guiLeft + 58, guiTop + 120, 50, 10, StringUtils.translate(GUI_LANG_KEY + "save")));
 
 		if(this.textInput == null) {
-			this.textInput = new InputBar(Minecraft.getMinecraft().fontRenderer, this.getBaseScreen(), guiLeft + 30, guiTop + 32, right - guiLeft - 20, 15);
+			this.textInput = new GuiInputBar(Minecraft.getMinecraft().fontRenderer, this.getBaseScreen(), guiLeft + 30, guiTop + 32, right - guiLeft - 20, 15);
 		}
 		this.textInput.reposition(guiLeft + 10, guiTop + 34, right - guiLeft - 20, 15);
 
@@ -71,7 +71,7 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		textInput.renderSearchBar();
+		textInput.renderGui();
 	}
 
 	@Override

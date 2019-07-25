@@ -55,7 +55,7 @@ public class DummyContainer extends Container {
 	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 	protected IInventory _playerInventory;
 	protected IInventory _dummyInventory;
-	protected IGuiOpenControler[] _controler;
+	protected IGuiOpenControler[] _controller;
 	boolean wasDummyLookup;
 	boolean overrideMCAntiSend;
 	private List<Slot> transferTop = new ArrayList<>();
@@ -66,22 +66,22 @@ public class DummyContainer extends Container {
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory) {
 		_playerInventory = playerInventory;
 		_dummyInventory = dummyInventory;
-		_controler = null;
+		_controller = null;
 	}
 
-	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler... controler) {
+	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler... controller) {
 		_playerInventory = player.inventory;
 		_dummyInventory = dummyInventory;
-		_controler = controler;
+		_controller = controller;
 		if (MainProxy.isServer()) {
-			for (IGuiOpenControler element : _controler) {
+			for (IGuiOpenControler element : _controller) {
 				element.guiOpenedByPlayer(player);
 			}
 		}
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
+	public boolean canInteractWith(EntityPlayer player) {
 		return true;
 	}
 
@@ -135,11 +135,15 @@ public class DummyContainer extends Container {
 	}
 
 	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Class<? extends Item> itemClass) {
-		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, itemClass));
+		Slot slot = addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, itemClass));
+		transferTop.add(slot);
+		return slot;
 	}
 
 	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item) {
-		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
+		Slot slot = addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
+		transferTop.add(slot);
+		return slot;
 	}
 
 	public Slot addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item, int stackLimit) {
@@ -195,7 +199,7 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer pl, int i) {
+	public ItemStack transferStackInSlot(EntityPlayer player, int i) {
 		if (transferTop.isEmpty() || transferBottom.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
@@ -204,11 +208,11 @@ public class DummyContainer extends Container {
 			return ItemStack.EMPTY;
 		}
 		if (transferTop.contains(slot)) {
-			handleShiftClickLists(slot, transferBottom, true, pl);
-			handleShiftClickLists(slot, transferBottom, false, pl);
+			handleShiftClickLists(slot, transferBottom, true, player);
+			handleShiftClickLists(slot, transferBottom, false, player);
 		} else if (transferBottom.contains(slot)) {
-			handleShiftClickLists(slot, transferTop, true, pl);
-			handleShiftClickLists(slot, transferTop, false, pl);
+			handleShiftClickLists(slot, transferTop, true, player);
+			handleShiftClickLists(slot, transferTop, false, player);
 		}
 		return ItemStack.EMPTY;
 	}
@@ -554,32 +558,32 @@ public class DummyContainer extends Container {
 	 * Clone/clear itemstacks for items
 	 */
 	@Override
-	public ItemStack slotClick(int slotId, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
+	public ItemStack slotClick(int slotId, int mouseButton, ClickType shiftMode, EntityPlayer player) {
 		lastClicked = System.currentTimeMillis();
 		if (slotId < 0) {
-			return superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
+			return superSlotClick(slotId, mouseButton, shiftMode, player);
 		}
 		Slot slot = (Slot) inventorySlots.get(slotId);
 		//debug dump
 		if (LPConstants.DEBUG && slot != null) {
 			ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
-				ItemIdentifier.get(stack).debugDumpData(entityplayer.world.isRemote);
+				ItemIdentifier.get(stack).debugDumpData(player.world.isRemote);
 			}
 		}
+
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
-			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
+			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, player);
 			ItemStack stack2 = slot.getStack();
 			if (!stack2.isEmpty() && stack2.getItem() instanceof ItemModule) {
-				if (entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.world)) {
-					((EntityPlayerMP) entityplayer).sendSlotContents(this, slotId, stack2);
+				if (player instanceof EntityPlayerMP && MainProxy.isServer(player.world)) {
+					((EntityPlayerMP) player).sendSlotContents(this, slotId, stack2);
 				}
 			}
 			return stack1;
 		}
 
-		InventoryPlayer inventoryplayer = entityplayer.inventory;
-
+		InventoryPlayer inventoryplayer = player.inventory;
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
 
 		// we get a leftclick *and* a doubleclick message if there's a doubleclick with no item on the pointer, filter it out
@@ -600,7 +604,7 @@ public class DummyContainer extends Container {
 			return currentlyEquippedStack;
 		}
 
-		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, shiftMode, entityplayer);
+		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, shiftMode, player);
 		return currentlyEquippedStack;
 	}
 
@@ -743,8 +747,8 @@ public class DummyContainer extends Container {
 
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
-		if (_controler != null) {
-			for (IGuiOpenControler element : _controler) {
+		if (_controller != null) {
+			for (IGuiOpenControler element : _controller) {
 				element.guiClosedByPlayer(par1EntityPlayer);
 			}
 		}

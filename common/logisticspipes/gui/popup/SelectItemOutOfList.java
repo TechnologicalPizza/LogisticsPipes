@@ -7,7 +7,7 @@ import java.util.Map;
 
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
@@ -29,7 +29,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 	private final List<ItemIdentifierStack> candidate;
 	private final IHandleItemChoice handler;
 	private ItemDisplay itemDisplay = null;
-	private InputBar search;
+	private GuiInputBar search;
 
 	public SelectItemOutOfList(List<ItemIdentifierStack> candidate, IHandleItemChoice handler) {
 		super(156, 188, 0, 0);
@@ -47,7 +47,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		buttonList.add(new GuiButton(2, guiLeft + 100, bottom - 26, 50, 20, "Select"));
 
 		if (search == null) {
-			search = new InputBar(fontRenderer, this.getBaseScreen(), guiLeft + 7, bottom - 23, right - guiLeft - 64, 15, false);
+			search = new GuiInputBar(fontRenderer, this.getBaseScreen(), guiLeft + 7, bottom - 23, right - guiLeft - 64, 15, false);
 		}
 		search.reposition(guiLeft + 7, bottom - 23, right - guiLeft - 64, 15);
 
@@ -76,8 +76,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
-		//SearchInput
-		search.renderSearchBar();
+		search.renderGui();
 
 		//itemDisplay.renderSortMode(xCenter, bottom - 52);
 		itemDisplay.renderItemArea(zLevel);

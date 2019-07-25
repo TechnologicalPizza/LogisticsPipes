@@ -37,6 +37,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IGuiOpenControler {
 
 	public static class ProgrammCategories {
+
 		public static final ResourceLocation BASIC = new ResourceLocation("logisticspipes", "compilercategory.basic");
 		public static final ResourceLocation TIER_2 = new ResourceLocation("logisticspipes", "compilercategory.tier_2");
 		public static final ResourceLocation FLUID = new ResourceLocation("logisticspipes", "compilercategory.fluid");
@@ -45,6 +46,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		public static final ResourceLocation CHASSIS_2 = new ResourceLocation("logisticspipes", "compilercategory.chassis_2");
 		public static final ResourceLocation CHASSIS_3 = new ResourceLocation("logisticspipes", "compilercategory.chassis_3");
 		public static final ResourceLocation MODDED = new ResourceLocation("logisticspipes", "compilercategory.modded");
+
 		static {
 			//Force the order of keys
 			programByCategory.put(BASIC, new HashSet<>());
@@ -61,6 +63,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	public static final Map<ResourceLocation, Set<ResourceLocation>> programByCategory = new LinkedHashMap<>();
 	private final PlayerCollectionList playerList = new PlayerCollectionList();
 	private String taskType = "";
+
 	@Getter
 	private ResourceLocation currentTask = null;
 	@Getter
@@ -77,21 +80,21 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	public NBTTagList getNBTTagListForKey(String key) {
-		NBTTagCompound nbt = this.getInventory().getStackInSlot(0).getTagCompound();
+		SimpleStackInventory inv = getInventory();
+		NBTTagCompound nbt = inv.getStackInSlot(0).getTagCompound();
 		if (nbt == null) {
-			this.getInventory().getStackInSlot(0).setTagCompound(new NBTTagCompound());
-			nbt = this.getInventory().getStackInSlot(0).getTagCompound();
+			inv.getStackInSlot(0).setTagCompound(new NBTTagCompound());
+			nbt = inv.getStackInSlot(0).getTagCompound();
 		}
 
 		if (!nbt.hasKey(key)) {
-			NBTTagList list = new NBTTagList();
-			nbt.setTag(key, list);
+			nbt.setTag(key, new NBTTagList());
 		}
 		return nbt.getTagList(key, 8 /* String */);
 	}
 
 	public void triggerNewTask(ResourceLocation category, String taskType) {
-		if(currentTask != null) return;
+		if (currentTask != null) return;
 		this.taskType = taskType;
 		currentTask = category;
 		taskProgress = 0;
@@ -123,53 +126,65 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	@Override
 	public void update() {
 		super.update();
-		if(MainProxy.isServer(world)) {
+		if (MainProxy.isServer(world)) {
 			if (currentTask != null) {
 				wasAbleToConsumePower = false;
 				for (EnumFacing dir : EnumFacing.VALUES) {
-					if(dir == EnumFacing.UP) continue;
+					if (dir == EnumFacing.UP)
+						continue;
+
 					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 					TileEntity tile = pos.getTileEntity(getWorld());
-					if (!(tile instanceof LogisticsTileGenericPipe)) {
+					if (!(tile instanceof LogisticsTileGenericPipe))
 						continue;
-					}
+
 					LogisticsTileGenericPipe tPipe = (LogisticsTileGenericPipe) tile;
-					if (!(tPipe.pipe.getClass() == PipeItemsBasicLogistics.class)) {
+					if (!(tPipe.pipe.getClass() == PipeItemsBasicLogistics.class))
 						continue;
-					}
+
 					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
 					if (pipe.useEnergy(10)) {
-						if (taskType.equals("category")) {
-							taskProgress += 0.0005;
-						} else if (taskType.equals("program")) {
-							taskProgress += 0.0025;
-						} else if (taskType.equals("flash")) {
-							taskProgress += 0.01;
-						} else {
-							taskProgress += 1;
+						switch (taskType) {
+							case "category":
+								taskProgress += 0.0005;
+								break;
+							case "program":
+								taskProgress += 0.0025;
+								break;
+							case "flash":
+								taskProgress += 0.01;
+								break;
+							default:
+								taskProgress += 1;
+								break;
 						}
 						wasAbleToConsumePower = true;
 					}
 				}
 				if (taskProgress >= 1) {
-					if (taskType.equals("category")) {
-						NBTTagList list = getNBTTagListForKey("compilerCategories");
-						list.appendTag(new NBTTagString(currentTask.toString()));
-					} else if (taskType.equals("program")) {
-						NBTTagList list = getNBTTagListForKey("compilerPrograms");
-						list.appendTag(new NBTTagString(currentTask.toString()));
-					} else if (taskType.equals("flash")) {
-						if(!getInventory().getStackInSlot(1).isEmpty()) {
-							ItemStack programmer = getInventory().getStackInSlot(1);
-							if(!programmer.hasTagCompound()) {
-								programmer.setTagCompound(new NBTTagCompound());
-							}
-							programmer.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
+					switch (taskType) {
+						case "category": {
+							NBTTagList list = getNBTTagListForKey("compilerCategories");
+							list.appendTag(new NBTTagString(currentTask.toString()));
+							break;
 						}
-					} else {
-						throw new UnsupportedOperationException(taskType);
+						case "program": {
+							NBTTagList list = getNBTTagListForKey("compilerPrograms");
+							list.appendTag(new NBTTagString(currentTask.toString()));
+							break;
+						}
+						case "flash": {
+							if (!getInventory().getStackInSlot(1).isEmpty()) {
+								ItemStack programmer = getInventory().getStackInSlot(1);
+								if (!programmer.hasTagCompound())
+									programmer.setTagCompound(new NBTTagCompound());
+								programmer.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
+							}
+							break;
+						}
+						default:
+							throw new UnsupportedOperationException(taskType);
 					}
-
 					taskType = "";
 					currentTask = null;
 					taskProgress = 0;

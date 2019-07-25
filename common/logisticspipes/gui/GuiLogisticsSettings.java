@@ -16,7 +16,7 @@ import logisticspipes.network.packets.PlayerConfigToServerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
@@ -37,8 +37,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 	private class PipeRenderSettings extends TabSubGui {
 
-		private InputBar renderDistance;
-		private InputBar contentRenderDistance;
+		private GuiInputBar renderDistance;
+		private GuiInputBar contentRenderDistance;
 		private GuiCheckBox useNewRendererButton;
 		private GuiCheckBox useFallbackRendererButton;
 
@@ -48,12 +48,12 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void initTab() {
 			ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 			if (renderDistance == null) {
-				renderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, InputBar.Align.RIGHT);
+				renderDistance = new GuiInputBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, GuiInputBar.Align.RIGHT);
 				renderDistance.input1 = Integer.toString(config.getRenderPipeDistance());
 			}
 			renderDistance.reposition(15, 80, 30, 15);
 			if (contentRenderDistance == null) {
-				contentRenderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, InputBar.Align.RIGHT);
+				contentRenderDistance = new GuiInputBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, GuiInputBar.Align.RIGHT);
 				contentRenderDistance.input1 = Integer.toString(config.getRenderPipeContentDistance());
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
@@ -90,8 +90,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			renderDistance.renderSearchBar();
-			contentRenderDistance.renderSearchBar();
+			renderDistance.renderGui();
+			contentRenderDistance.renderGui();
 			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
 			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
 			fontRenderer.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);

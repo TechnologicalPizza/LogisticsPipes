@@ -33,7 +33,7 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -44,7 +44,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 
 	public final EntityPlayer _entityPlayer;
 	public ItemDisplay itemDisplay;
-	private InputBar search;
+	private GuiInputBar search;
 
 	protected String _title = "Request items";
 
@@ -96,7 +96,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new InputBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new GuiInputBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 
@@ -125,8 +125,8 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 
 		itemDisplay.renderAmount(getStackAmount());
-		//SearchInput
-		search.renderSearchBar();
+
+		search.renderGui();
 
 		itemDisplay.renderSortMode(xCenter, bottom - 52);
 		itemDisplay.renderItemArea(zLevel);
@@ -134,9 +134,9 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
-		if (super.hasSubGui()) {
+		if (super.hasSubGui())
 			return;
-		}
+
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
 	}
 

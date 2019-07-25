@@ -124,11 +124,11 @@ public class GuiItemSink extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void mouseReleased(int mouseX, int mouseY, int which) {
-		if (isMouseInFuzzyPanel(mouseX - guiLeft, mouseY - guiTop)) {
+	protected void mouseReleased(int x, int y, int button) {
+		if (isMouseInFuzzyPanel(x - guiLeft, y - guiTop)) {
 			return;
 		}
-		super.mouseReleased(mouseX, mouseY, which);
+		super.mouseReleased(x, y, button);
 	}
 
 	@Override

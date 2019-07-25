@@ -325,6 +325,8 @@ lp.hud.config.satellite.disabled=Disabled Satellite.
 
 # GUI
 
+gui.requestblock.searchplaceholder=Search...
+
 gui.itemsink.Yes=Yes
 gui.itemsink.No=No
 gui.itemsink.Inventory=Inventory
@@ -474,6 +476,7 @@ gui.compiler.logisticspipes.compilercategory.chassis_2=Chassis 2
 gui.compiler.logisticspipes.compilercategory.chassis_3=Chassis 3
 gui.compiler.logisticspipes.compilercategory.modded=Modded
 
+gui.compiler.searchplaceholder=Search programs...
 gui.compiler.processing=Processing...
 gui.compiler.nopower.1=%cRED No power %cRESET
 gui.compiler.nopower.2=%cRED Connect to LP network %cRESET

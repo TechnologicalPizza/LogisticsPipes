@@ -17,7 +17,7 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ItemDisplay;
-import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.GuiInputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -33,7 +33,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	private final String PREFIX = "gui.networkstatistics.add.";
 
 	ItemDisplay itemDisplay;
-	InputBar search;
+	GuiInputBar search;
 	private final LogisticsStatisticsTileEntity tile;
 
 	public GuiAddTracking(LogisticsStatisticsTileEntity tile) {
@@ -55,7 +55,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 21, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new InputBar(fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new GuiInputBar(fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 10, bottom - 58, right - guiLeft - 20, 15);
 
@@ -83,7 +83,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
-		search.renderSearchBar();
+		search.renderGui();
 
 		itemDisplay.renderSortMode(xCenter, bottom - 32);
 	}

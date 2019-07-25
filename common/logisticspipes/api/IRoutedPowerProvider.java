@@ -3,8 +3,8 @@ package logisticspipes.api;
 import java.util.List;
 
 /**
- * things implementing this interface are capable of providing power, but they
- * draw from another sources Implement ILogisticsPowerProvider if you wish to
+ * Objects implementing this interface are capable of providing power, but they
+ * draw from other sources. Implement ILogisticsPowerProvider if you wish to
  * provide power to the LP network. Losses of energy based on distance may be
  * involved.
  * 
