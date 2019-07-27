@@ -103,10 +103,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	/***
-	 * @param flag
-	 *            Weather to list a Nearby Pipe or not
+	 * @param flag Whether to list a Nearby Pipe or not
 	 */
-
 	public final List<Triplet<ITankUtil, TileEntity, EnumFacing>> getAdjacentTanksAdvanced(boolean flag) {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
 				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
@@ -174,53 +172,48 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 						continue;
 					}
 				}
+
 				FluidTank internalTank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
 				validDirections++;
-				if (internalTank.getFluid() == null) {
+				if (internalTank.getFluid() == null)
 					continue;
-				}
+
 				ITankUtil externalTank = pair.getValue1();
 				int filled = externalTank.fill(FluidIdentifierStack.getFromStack(internalTank.getFluid()), true);
-				if (filled == 0) {
+				if (filled == 0)
 					continue;
-				}
+
 				FluidStack drain = internalTank.drain(filled, true);
-				if (drain == null || filled != drain.amount) {
-					if (LPConstants.DEBUG) {
-						throw new UnsupportedOperationException("Fluid Multiplication");
-					}
-				}
+				if (LPConstants.DEBUG && drain == null || filled != drain.amount)
+					throw new UnsupportedOperationException("Fluid Multiplication");
 			}
-			if (validDirections == 0) {
+			if (validDirections == 0)
 				return;
-			}
+
 			FluidTank tank = ((PipeFluidTransportLogistics) transport).internalTank;
 			FluidStack stack = tank.getFluid();
-			if (stack == null) {
+			if (stack == null)
 				return;
-			}
+
 			for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : list) {
 				if (pair.getValue2() instanceof LogisticsTileGenericPipe) {
-					if (((LogisticsTileGenericPipe) pair.getValue2()).pipe instanceof CoreRoutedPipe) {
+					if (((LogisticsTileGenericPipe) pair.getValue2()).pipe instanceof CoreRoutedPipe)
 						continue;
-					}
 				}
+
 				FluidTank tankSide = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
 				stack = tank.getFluid();
-				if (stack == null) {
+				if (stack == null)
 					continue;
-				}
+
 				stack = stack.copy();
 				int filled = tankSide.fill(stack, true);
-				if (filled == 0) {
+				if (filled == 0)
 					continue;
-				}
+
 				FluidStack drain = tank.drain(filled, true);
-				if (drain == null || filled != drain.amount) {
-					if (LPConstants.DEBUG) {
-						throw new UnsupportedOperationException("Fluid Multiplication");
-					}
-				}
+				if (LPConstants.DEBUG && drain == null || filled != drain.amount)
+					throw new UnsupportedOperationException("Fluid Multiplication");
 			}
 		}
 	}

@@ -22,6 +22,8 @@ public class StackTraceUtil {
 
 	private static class DummyInfo extends Info {
 
+		public static final DummyInfo instance = new DummyInfo();
+
 		@Override
 		public void end() {}
 	}
@@ -31,21 +33,19 @@ public class StackTraceUtil {
 	}
 
 	public static Info addTraceInformation(final Supplier<String> informationSupplier, Info... infos) {
-		if (!LPConstants.DEBUG) {
-			return new DummyInfo();
-		}
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		final StackTraceElement calledFrom = trace[2];
 		return StackTraceUtil.addTraceInformationFor(calledFrom, informationSupplier.get(), infos);
 	}
 
 	public static Info addSuperTraceInformation(final Supplier<String> informationSupplier, Info... infos) {
-		if (!LPConstants.DEBUG) {
-			return new DummyInfo();
-		}
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		final StackTraceElement calledFrom = trace[3];
 		return StackTraceUtil.addTraceInformationFor(calledFrom, informationSupplier.get(), infos);
+	}
+
+	public static Info getDummyInformation() {
+		return DummyInfo.instance;
 	}
 
 	private static Info addTraceInformationFor(final StackTraceElement calledFrom, final String information, final Info... infos) {

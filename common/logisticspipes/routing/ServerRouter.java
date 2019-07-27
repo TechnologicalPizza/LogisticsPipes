@@ -1135,7 +1135,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (connectionNeedsChecking == 2) {
 			ensureChangeListenerAttachedToPipe(pipe);
 
-			final Info info = StackTraceUtil.addTraceInformation(causedBy::toString);
+			final Info info = LPConstants.DEBUG ? StackTraceUtil.addTraceInformation(causedBy::toString) : StackTraceUtil.getDummyInformation();
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
 				updateLsa();

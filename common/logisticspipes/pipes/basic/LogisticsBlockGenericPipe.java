@@ -123,9 +123,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
-		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
+		if (!LogisticsBlockGenericPipe.isValid(pipe))
 			return;
-		}
 
 		if (pipe.canBeDestroyed() || pipe.destroyByPlayer()) {
 			pipe.onBlockRemoval();
@@ -134,7 +133,6 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		}
 
 		World world = pipe.container.getWorld();
-
 		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
 			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
 			LogisticsBlockGenericPipe.pipeRemoved.clear();
@@ -142,18 +140,19 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		}
 
 		if (pipe.isMultiBlock()) {
-			if (pipe.preventRemove()) {
+			if (pipe.preventRemove())
 				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
-			}
+
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> list = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 			list.forEach(pos -> pos.add(new DoubleCoordinates(pipe)));
+
 			for (DoubleCoordinates pos : pipe.container.subMultiBlock) {
 				TileEntity tile = pos.getTileEntity(world);
 				if(tile instanceof LogisticsTileGenericSubMultiBlock) {
 					DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> equ = list.findClosest(pos);
-					if(equ != null) {
+					if(equ != null)
 						((LogisticsTileGenericSubMultiBlock) tile).removeSubType(equ.getType());
-					}
+
 					if(((LogisticsTileGenericSubMultiBlock) tile).removeMainPipe(new DoubleCoordinates(pipe))) {
 						LogisticsBlockGenericSubMultiBlock.redirectedToMainPipe = true;
 						pos.setBlockToAir(world);
@@ -465,77 +464,82 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		public Part part;
 	}
 
-	private InternalRayTraceResult doRayTrace(LogisticsTileGenericPipe tileG, CoreUnroutedPipe pipe, Vec3d start, Vec3d end) {
-		if (tileG == null) return null;
-		if (!LogisticsBlockGenericPipe.isValid(pipe)) return null;
+	private InternalRayTraceResult doRayTrace(LogisticsTileGenericPipe tile, CoreUnroutedPipe pipe, Vec3d start, Vec3d end) {
+		if (tile == null || !LogisticsBlockGenericPipe.isValid(pipe))
+			return null;
 
-		/*
-		 * pipe hits along x, y, and z axis, gate (all 6 sides) [and
-		 * wires+facades]
-		 */
-		ArrayList<Hit> list = new ArrayList<>();
+		// pipe hits along x, y, and z axis, gate (all 6 sides) [and wires+facades]
+		List<Hit> hits = new ArrayList<>();
 
-		// pipe
 		for (EnumFacing side : LogisticsBlockGenericPipe.DIR_VALUES) {
-			if (side == null || tileG.isPipeConnectedCached(side)) {
-				if(side != null && ignoreSideRayTrace) continue;
+			if (side == null || tile.isPipeConnectedCached(side)) {
+				if (side != null && ignoreSideRayTrace)
+					continue;
 				AxisAlignedBB bb = getPipeBoundingBox(side);
-				list.add(new Hit(rayTrace(tileG.getPos(), start, end, bb), bb, side, Part.PIPE));
+				hits.add(new Hit(rayTrace(tile.getPos(), start, end, bb), bb, side, Part.PIPE));
 			}
 		}
 
-		// pluggables
+		if(hits.size() == 0)
+			return null;
 
 		/*
+		// pluggables
 		for (EnumFacing side : EnumFacing.VALUES) {
-			if (tileG.getBCPipePluggable(side) != null) {
-				if(side != null && ignoreSideRayTrace) continue;
-				AxisAlignedBB bb = tileG.getBCPipePluggable(side).getBoundingBox(side);
-				boxes[7 + side.ordinal()] = bb;
-				hits[7 + side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), start, end);
-				sideHit[7 + side.ordinal()] = side;
-			}
+			if (tile.getBCPipePluggable(side) == null)
+				continue;
+
+			if (side != null && ignoreSideRayTrace)
+				continue;
+
+			AxisAlignedBB bb = tile.getBCPipePluggable(side).getBoundingBox(side);
+			boxes[7 + side.ordinal()] = bb;
+			hits[7 + side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tile.getWorld(), tile.getPos(), start, end);
+			sideHit[7 + side.ordinal()] = side;
 		}
 		*/
 
 		// TODO: check wires
 
 		// get closest hit
-
-		return list.stream()
-			.filter(r -> r.rayTraceResult != null)
-			.min(Comparator.comparing(r -> r.rayTraceResult.hitVec.squareDistanceTo(start)))
-			.map(r -> new InternalRayTraceResult(r.part, r.rayTraceResult, r.box, r.side))
-			.orElse(null);
+		return hits.stream()
+				.filter(r -> r.rayTraceResult != null)
+				.min(Comparator.comparing(r -> r.rayTraceResult.hitVec.squareDistanceTo(start)))
+				.map(r -> new InternalRayTraceResult(r.part, r.rayTraceResult, r.box, r.side))
+				.orElse(null);
 	}
 
-	private InternalRayTraceResult doRayTraceMultiblock(LogisticsTileGenericPipe tileG, CoreMultiBlockPipe pipe, Vec3d start, Vec3d direction) {
-		if (tileG == null) return null;
-		if (!LogisticsBlockGenericPipe.isValid(pipe)) return null;
+	private InternalRayTraceResult doRayTraceMultiblock(LogisticsTileGenericPipe tile, CoreMultiBlockPipe pipe, Vec3d start, Vec3d direction) {
+		if (tile == null || !LogisticsBlockGenericPipe.isValid(pipe))
+			return null;
+
+		List<AxisAlignedBB> boxes = new ArrayList<>();
+		pipe.addCollisionBoxesToList(boxes, null);
+		if (boxes.size() == 0)
+			return null;
 
 		List<RayTraceResult> hits = new ArrayList<>();
-		List<AxisAlignedBB> boxes = new ArrayList<>();
-
-		pipe.addCollisionBoxesToList(boxes, null);
-
-		while (hits.size() < boxes.size()) {
+		while (hits.size() < boxes.size())
 			hits.add(null);
-		}
 
 		for (int i = 0; i < boxes.size(); i++) {
 			AxisAlignedBB bb = boxes.get(i);
-			hits.set(i, super.rayTrace(tileG.getPos(), start, direction, bb.offset(BlockPos.ORIGIN.subtract(tileG.getPos()))));
+			hits.set(i, super.rayTrace(tile.getPos(), start, direction, bb.offset(BlockPos.ORIGIN.subtract(tile.getPos()))));
 		}
 
+		if(hits.size() == 0)
+			return null;
+
 		return hits.stream()
-			.filter(Objects::nonNull)
-			.min(Comparator.comparing(r -> r.hitVec.squareDistanceTo(start)))
-			.map(r -> new InternalRayTraceResult(Part.PIPE, r, pipe.getCompleteBox(), null))
-			.orElse(null);
+				.filter(Objects::nonNull)
+				.min(Comparator.comparing(r -> r.hitVec.squareDistanceTo(start)))
+				.map(r -> new InternalRayTraceResult(Part.PIPE, r, pipe.getCompleteBox(), null))
+				.orElse(null);
 	}
 
 	private AxisAlignedBB getPipeBoundingBox(@Nullable EnumFacing side) {
-		if (side == null) return PIPE_CENTER_BB;
+		if (side == null)
+			return PIPE_CENTER_BB;
 		return PIPE_CONN_BB.get(side.getIndex());
 	}
 
@@ -570,6 +574,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	private static final EnumFacing[] DIR_VALUES;
+
 	static {
 		DIR_VALUES = new EnumFacing[EnumFacing.VALUES.length + 1];
 		DIR_VALUES[0] = null;
@@ -626,9 +631,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		TileEntity tile = world.getTileEntity(pos);
 
 		if (tile instanceof LogisticsTileGenericPipe) {
-			if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
+			if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable)
 				return true;
-			}
 		}
 
 		return super.isSideSolid(state, world, pos, side);
@@ -642,24 +646,20 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 	@Override
 	public void dropBlockAsItemWithChance(World world, final BlockPos pos, IBlockState state, float chance, int fortune) {
-
-		if (world.isRemote) {
+		if (world.isRemote)
 			return;
-		}
 
 		int i1 = quantityDropped(world.rand);
 		for (int j1 = 0; j1 < i1; j1++) {
-			if (world.rand.nextFloat() > chance) {
+			if (world.rand.nextFloat() > chance)
 				continue;
-			}
 
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
-			if (pipe == null) {
+			if (pipe == null)
 				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new DoubleCoordinates(pos));
-			}
 
-			if(pipe == null) return;
+			if(pipe == null)
+				return;
 
 			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
 				for (ItemStack stack : pipe.dropContents()) {
@@ -672,9 +672,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 					@Override
 					public TileEntity getTileEntity(BlockPos testPos) {
-						if (pos == testPos) {
+						if (pos == testPos)
 							return finalPipe.container;
-						}
 						return super.getTileEntity(pos);
 					}
 				};
@@ -698,16 +697,13 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		ItemStack pick = super.getPickBlock(state, target, world, pos, player);
-		if(!pick.isEmpty()) {
+		if (!pick.isEmpty())
 			return pick;
-		}
-		InternalRayTraceResult rayTraceResult = doRayTrace(world, pos, player);
 
+		InternalRayTraceResult rayTraceResult = doRayTrace(world, pos, player);
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
-			switch (rayTraceResult.hitPart) {
-				case PIPE:
-					return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, pos).item);
-			}
+			if (rayTraceResult.hitPart == Part.PIPE)
+				return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, pos).item);
 		}
 		return ItemStack.EMPTY;
 	}
@@ -718,10 +714,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe))
 			pipe.container.scheduleNeighborChange();
-		}
 	}
 
 	@Override
@@ -732,23 +726,21 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.onBlockPlaced();
 			pipe.onBlockPlacedBy(placer);
-			if (pipe instanceof IRotationProvider) {
+			if (pipe instanceof IRotationProvider)
 				((IRotationProvider) pipe).setFacing(placer.getHorizontalFacing().getOpposite());
-			}
 		}
 	}
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset) {
-		if(super.onBlockActivated(world, pos, state, player, hand, side, xOffset, yOffset, zOffset)) return true;
-
-		ItemStack heldItem = player.inventory.mainInventory.get(player.inventory.currentItem);
+		if(super.onBlockActivated(world, pos, state, player, hand, side, xOffset, yOffset, zOffset))
+			return true;
 
 		//world.notifyBlocksOfNeighborChange(pos, LogisticsPipes.LogisticsPipeBlock);
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 
+			ItemStack heldItem = player.inventory.mainInventory.get(player.inventory.currentItem);
 			if (heldItem.isEmpty()) {
 				// Fall through the end of the test
 			} else if (heldItem.getItem() == Items.SIGN) {
@@ -768,10 +760,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		super.onEntityCollidedWithBlock(world, pos, state, entity);
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe))
 			pipe.onEntityCollidedWithBlock(entity);
-		}
 	}
 
 	@Override
@@ -782,48 +772,34 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager effectRenderer) {
-		if(super.addHitEffects(state, world, target, effectRenderer)) return true;
+		if (super.addHitEffects(state, world, target, effectRenderer))
+			return true;
+
 		BlockPos pos = target.getBlockPos();
-
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-		if (pipe == null) {
+		if (pipe == null)
 			return false;
-		}
 
-		TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
-
-		EnumFacing sideHit = target.sideHit;
-
-		Block block = LPBlocks.pipe;
 		float b = 0.1F;
 		double px = target.hitVec.x + rand.nextDouble() * (state.getBoundingBox(world, pos).maxX - state.getBoundingBox(world, pos).minX - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minX;
 		double py = target.hitVec.y + rand.nextDouble() * (state.getBoundingBox(world, pos).maxY - state.getBoundingBox(world, pos).minY - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minY;
 		double pz = target.hitVec.z + rand.nextDouble() * (state.getBoundingBox(world, pos).maxZ - state.getBoundingBox(world, pos).minZ - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minZ;
 
-		if (sideHit == EnumFacing.DOWN) {
+		EnumFacing sideHit = target.sideHit;
+		if (sideHit == EnumFacing.DOWN)
 			py = target.hitVec.y + state.getBoundingBox(world, pos).minY - b;
-		}
-
-		if (sideHit == EnumFacing.UP) {
+		else if (sideHit == EnumFacing.UP)
 			py = target.hitVec.y + state.getBoundingBox(world, pos).maxY + b;
-		}
-
-		if (sideHit == EnumFacing.NORTH) {
+		else if (sideHit == EnumFacing.NORTH)
 			pz = target.hitVec.z + state.getBoundingBox(world, pos).minZ - b;
-		}
-
-		if (sideHit == EnumFacing.SOUTH) {
+		else if (sideHit == EnumFacing.SOUTH)
 			pz = target.hitVec.z + state.getBoundingBox(world, pos).maxZ + b;
-		}
-
-		if (sideHit == EnumFacing.EAST) {
+		else if (sideHit == EnumFacing.EAST)
 			px = target.hitVec.x + state.getBoundingBox(world, pos).minX - b;
-		}
-
-		if (sideHit == EnumFacing.WEST) {
+		else if (sideHit == EnumFacing.WEST)
 			px = target.hitVec.x + state.getBoundingBox(world, pos).maxX + b;
-		}
 
+		TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
 		Particle fx = effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.getParticleID(), px, py, pz, 0.0D, 0.0D, 0.0D, Block.getStateId(world.getBlockState(target.getBlockPos())));
 		fx.setParticleTexture(icon);
 		effectRenderer.addEffect(fx.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
@@ -833,14 +809,14 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager effectRenderer) {
-		if(super.addDestroyEffects(world, pos, effectRenderer)) return true;
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-		if (pipe == null) {
-			return false;
-		}
+		if(super.addDestroyEffects(world, pos, effectRenderer))
+			return true;
 
-		ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
-		//if (config.isUseNewRenderer()) {
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
+		if (pipe == null)
+			return false;
+
+		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			LogisticsNewRenderPipe.renderDestruction(pipe, world, pos.getX(), pos.getY(), pos.getZ(), effectRenderer);
 		/*} else {
 			TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
@@ -912,19 +888,15 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		state = super.getActualState(state, worldIn, pos);
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
-
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			if (pipe instanceof IRotationProvider) {
+			if (pipe instanceof IRotationProvider)
 				state = state.withProperty(rotationProperty, ((IRotationProvider) pipe).getRotation());
-			}
 
-			for (EnumFacing side : EnumFacing.VALUES) {
+			for (EnumFacing side : EnumFacing.VALUES)
 				state = state.withProperty(connectionPropertys.get(side), pipe.container.renderState.pipeConnectionMatrix.isConnected(side));
-			}
 
-			if(pipe instanceof PipeBlockRequestTable) {
+			if(pipe instanceof PipeBlockRequestTable)
 				state = state.withProperty(modelTypeProperty, PipeRenderModel.REQUEST_TABLE);
-			}
 		}
 
 		return state;
@@ -935,7 +907,6 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		state = mcmpBlockAccess.getExtendedState(state, worldIn, pos);
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
-
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			LogisticsNewRenderPipe.checkAndCalculateRenderCache(pipe.container);
 			state = ((IExtendedBlockState)state).withProperty(propertyRenderList, pipe.container.renderState.cachedRenderer);
@@ -946,9 +917,10 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	private void checkForRenderChanges(IBlockAccess worldIn, BlockPos blockPos) {
-		TileEntity tile = new DoubleCoordinates(blockPos).getTileEntity(worldIn);
-		if (!(tile instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe) tile).renderState.checkForRenderUpdate(worldIn, blockPos);
+		TileEntity tile = worldIn.getTileEntity(blockPos);
+		if (tile instanceof LogisticsTileGenericPipe) {
+			((LogisticsTileGenericPipe) tile).renderState.checkForRenderUpdate(worldIn, blockPos);
+		}
 	}
 
 	@Override

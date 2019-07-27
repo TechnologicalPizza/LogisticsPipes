@@ -83,16 +83,17 @@ public class LogisticsNewSolidBlockWorldRenderer {
 	}
 
 	public static void loadModels() {
-		if(!SimpleServiceLocator.cclProxy.isActivated()) return;
+		if (!SimpleServiceLocator.cclProxy.isActivated())
+			return;
+
 		try {
 			Map<String, IModel3D> blockPartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/BlockModel_result.obj"), 7, new LPScale(1 / 100f));
 
 			LogisticsNewSolidBlockWorldRenderer.block = null;
 			for (Entry<String, IModel3D> entry : blockPartModels.entrySet()) {
 				if (entry.getKey().contains(" Block ")) {
-					if (LogisticsNewSolidBlockWorldRenderer.block != null) {
+					if (LogisticsNewSolidBlockWorldRenderer.block != null)
 						throw new UnsupportedOperationException();
-					}
 					LogisticsNewSolidBlockWorldRenderer.block = LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0)));
 				}
 			}
@@ -102,20 +103,22 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			for (CoverSides side : CoverSides.values()) {
 				String grp_Outer = "OutSide_" + side.getLetter();
 				String grp_Inside = "Inside_" + side.getLetter();
+
 				for (Entry<String, IModel3D> entry : blockPartModels.entrySet()) {
-					if (entry.getKey().contains(" " + grp_Outer + " ")) {
-						LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
-					if (entry.getKey().contains(" " + grp_Inside + " ")) {
-						LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
-					}
+					if (entry.getKey().contains(" " + grp_Outer + " "))
+						LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(
+								entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
+
+					if (entry.getKey().contains(" " + grp_Inside + " "))
+						LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.put(side, LogisticsNewSolidBlockWorldRenderer.computeRotated(
+								entry.getValue().backfacedCopy().apply(new LPTranslation(0.0, 0.0, 1.0))));
 				}
-				if (LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side) == null) {
+
+				if (LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side) == null)
 					throw new RuntimeException("Couldn't load OutSide " + side.name() + " (" + grp_Outer + ").");
-				}
-				if (LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side) == null) {
+
+				if (LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side) == null)
 					throw new RuntimeException("Couldn't load OutSide " + side.name() + " (" + grp_Outer + ").");
-				}
 			}
 
 		} catch (Throwable e) {

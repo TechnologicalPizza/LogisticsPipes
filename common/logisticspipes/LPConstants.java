@@ -14,7 +14,7 @@ public class LPConstants {
 	public static final float BC_PIPE_MIN_POS = 0.25F;
 	public static final float BC_PIPE_MAX_POS = 0.75F;
 
-	public static final boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static final boolean DEBUG = false; //"%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 	public static final String MCVersion = "%MCVERSION%";
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = LPConstants.VERSION.contains(".dev.") || LPConstants.DEBUG;

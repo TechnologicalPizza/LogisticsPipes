@@ -185,25 +185,25 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@Override
 	public void update() {
 		imcmpltgpCompanion.update();
-		final Info superDebug = StackTraceUtil.addSuperTraceInformation(() -> "Time: " + getWorld().getWorldTime());
-		final Info debug = StackTraceUtil.addTraceInformation(() -> "(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
+		final Info superDebug = LPConstants.DEBUG ? StackTraceUtil.addSuperTraceInformation(() -> "Time: " + getWorld().getWorldTime()) : StackTraceUtil.getDummyInformation();
+		final Info debug = LPConstants.DEBUG ? StackTraceUtil.addTraceInformation(() -> "(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug) : StackTraceUtil.getDummyInformation();
+
 		if (sendInitPacket && MainProxy.isServer(getWorld())) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
+
 		if (!world.isRemote) {
-			if (deletePipe) {
+			if (deletePipe)
 				world.setBlockToAir(getPos());
-			}
 
 			if (pipe == null) {
 				debug.end();
 				return;
 			}
 
-			if (!initialized) {
+			if (!initialized)
 				initialize(pipe);
-			}
 		}
 
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
@@ -224,9 +224,8 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			blockNeighborChange = false;
 			refreshRenderState = true;
 
-			if(MainProxy.isServer(world)) {
+			if(MainProxy.isServer(world))
 				MainProxy.sendPacketToAllWatchingChunk(this, PacketHandler.getPacket(PipeSolidSideCheck.class).setTilePos(this));
-			}
 		}
 
 		//Sideblocks need to be checked before this

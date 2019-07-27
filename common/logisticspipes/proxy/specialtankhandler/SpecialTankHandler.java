@@ -29,35 +29,30 @@ public class SpecialTankHandler {
 
 	public List<TileEntity> getBaseTileFor(TileEntity tile) {
 		for (ISpecialTankHandler handler : handlers) {
-			if (handler.isType(tile)) {
+			if (handler.isType(tile))
 				return handler.getBaseTilesFor(tile);
-			}
 		}
 		return Lists.newArrayList(tile);
 	}
 
 	public boolean hasHandlerFor(TileEntity tile) {
-		if (tile == null) {
+		if (tile == null)
 			return false;
-		}
+
 		for (ISpecialTankHandler handler : handlers) {
-			if (handler.isType(tile)) {
+			if (handler.isType(tile))
 				return true;
-			}
 		}
 		return false;
 	}
 
 	public ISpecialTankHandler getTankHandlerFor(TileEntity tile) {
 		for (ISpecialTankHandler handler : handlers) {
-			if (handler.isType(tile)) {
+			if (handler.isType(tile))
 				return handler;
-			}
 		}
-		String name = "null";
-		if (tile != null) {
-			name = tile.getClass().getName();
-		}
-		throw new RuntimeException("Unknwon TankTileEntity Request, '" + name + "'");
+
+		String name = tile != null ? tile.getClass().getName() : "null";
+		throw new RuntimeException("Unknown TankTileEntity Request, '" + name + "'");
 	}
 }

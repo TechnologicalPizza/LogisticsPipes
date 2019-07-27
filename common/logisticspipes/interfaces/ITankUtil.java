@@ -20,9 +20,7 @@ public interface ITankUtil {
 
 	void forEachFluid(Consumer<FluidIdentifierStack> fluidStackConsumer);
 
-	/**
-	 * Type only amount is ignored
-	 */
+	/** Type only amount is ignored */
 	boolean canDrain(FluidIdentifier fluid);
 
 	int getFreeSpaceInsideTank(FluidIdentifier type);

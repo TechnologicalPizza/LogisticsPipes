@@ -589,25 +589,19 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	private ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
-		boolean inHand = false;
-		if(pipeTile == null) {
-			inHand = true;
-		}
-		if (pipeTile.pipe instanceof PipeBlockRequestTable) {
+		//boolean inHand = false;
+		//if(pipeTile == null)
+		//	inHand = true;
+
+		if (pipeTile.pipe == null || pipeTile.pipe instanceof PipeBlockRequestTable)
 			return;
-		}
-		if (pipeTile.pipe == null) {
-			return;
-		}
+
 		PipeRenderState renderState = pipeTile.renderState;
-
-		if (renderState.renderLists != null && renderState.renderLists.values().stream().anyMatch(GLRenderList::isInvalid)) {
+		if (renderState.renderLists != null && renderState.renderLists.values().stream().anyMatch(GLRenderList::isInvalid))
 			renderState.renderLists = null;
-		}
 
-		if (renderState.renderLists == null) {
+		if (renderState.renderLists == null)
 			renderState.renderLists = new HashMap<>();
-		}
 
 		if (distance > config.getRenderPipeDistance() * config.getRenderPipeDistance()) {
 			/*if (config.isUseFallbackRenderer()) {
@@ -617,28 +611,24 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			renderState.forceRenderOldPipe = false;
 			boolean recalculateList = checkAndCalculateRenderCache(pipeTile);
 			renderList(x, y, z, renderState.renderLists, renderState.cachedRenderer, recalculateList);
-			if(recalculateList) {
+			if(recalculateList)
 				pipeTile.getWorld().markBlockRangeForRenderUpdate(pipeTile.getPos(), pipeTile.getPos());
-			}
 		}
 	}
 
 	public static boolean checkAndCalculateRenderCache(LogisticsTileGenericPipe pipeTile) {
 		PipeRenderState renderState = pipeTile.renderState;
-
-		if (renderState.cachedRenderIndex != MainProxy.proxy.getRenderIndex()) {
+		if (renderState.cachedRenderIndex != MainProxy.proxy.getRenderIndex())
 			renderState.clearRenderCaches();
-		}
 
 		if (renderState.cachedRenderer == null) {
 			List<RenderEntry> objectsToRender = new ArrayList<>();
 
-			if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
+			if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe())
 				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
-			}
-			if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
+
+			if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null)
 				pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
-			}
 
 			renderState.cachedRenderIndex = MainProxy.proxy.getRenderIndex();
 			renderState.cachedRenderer = Collections.unmodifiableList(objectsToRender);
@@ -651,34 +641,35 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (renderLists.isEmpty() || !renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
 			Map<ResourceLocation, List<RenderEntry>> sorted = new HashMap<>();
 			for (RenderEntry model : cachedRenderer) {
-				if(!sorted.containsKey(model.getTexture())) {
+				if(!sorted.containsKey(model.getTexture()))
 					sorted.put(model.getTexture(), new LinkedList<>());
-				}
 				sorted.get(model.getTexture()).add(model);
 			}
 
 			for(Entry<ResourceLocation, List<RenderEntry>> entries: sorted.entrySet()) {
-				if(entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) continue;
-				if(!renderLists.containsKey(entries.getKey())) {
-					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
-				}
-				GLRenderList renderList = renderLists.get(entries.getKey());
-				if(renderList.isFilled() && !recalculateList) {
+				if(entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE))
 					continue;
-				}
+
+				if(!renderLists.containsKey(entries.getKey()))
+					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
+
+				GLRenderList renderList = renderLists.get(entries.getKey());
+				if(renderList.isFilled() && !recalculateList)
+					continue;
+
 				renderList.startListCompile();
 
 				SimpleServiceLocator.cclProxy.getRenderState().reset();
 				SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 
-				for(RenderEntry entry: entries.getValue()) {
+				for(RenderEntry entry: entries.getValue())
 					entry.getModel().render(entry.getOperations());
-				}
 
 				SimpleServiceLocator.cclProxy.getRenderState().draw();
 				renderList.stopCompile();
 			}
 		}
+
 		if(!renderLists.isEmpty()) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
